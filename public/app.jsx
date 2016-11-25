@@ -1,4 +1,4 @@
-//Component to be nested. It displays some H! and Paragraph.
+//Presentational component that displays the state.name and welcome message.
 var GreeterMessage = React.createClass ({
     render : function(){
         return (
@@ -10,24 +10,32 @@ var GreeterMessage = React.createClass ({
     }
 });
 
-//Component to be nested. It displays a form, validates it
+//Presentational component that displays a form, validates it
 //and call handler to set state.name
 var GreeterForm = React.createClass ({
     onFormSubmit : function(e){
         e.preventDefault();
+        var updates = {};
         var name = this.refs.name.value;
+        var message = this.refs.message.value;
         if (name.length > 0){
           this.refs.name.value = '';
-          this.props.onNewName(name);
+          updates.name = name;
         }
+        if (message.length > 0){
+          this.refs.message.value = '';
+          updates.message = message;
+        }
+        this.props.onNewData(updates);
     },
 
     render : function (){
         return (
           <div>
               <form onSubmit={this.onFormSubmit}>
-                <input type="text" ref="name"/>
-                <button>Set Button</button>
+                <input type="text" ref="name" placeholder="Enter Name"/> <br />
+                <textarea ref="message" placeholder="Enter Message"></textarea> <br />
+                <button>Submit</button>
               </form>
           </div>
         )
@@ -36,7 +44,8 @@ var GreeterForm = React.createClass ({
 
 
 
-//Main component. Takes the input from a form and updates the text on the main H1.
+//Container component that maintains state for the application
+//Takes the input from a form and updates the text of state.name.
 var Greeter = React.createClass({
     getDefaultProps : function(){
       return {
@@ -46,24 +55,23 @@ var Greeter = React.createClass({
     },
     getInitialState : function(){
       return {
-        name: this.props.name
+        name: this.props.name,
+        message: this.props.message
       };
     },
     //Sets the "User Name" and validates the input.
-    handleNewName : function(name){
-      this.setState({
-        name : name
-      });
+    handleNewData : function(updates){
+      this.setState(updates);
     },
     render : function () {
       var name = this.state.name;
-      var message = this.props.message;
+      var message = this.state.message;
       return (
         <div>
           {/* nested component*/}
           <GreeterMessage name={name} message={message}/>
           {/* nested component*/ }
-          <GreeterForm onNewName={this.handleNewName}/>
+          <GreeterForm onNewData={this.handleNewData}/>
         </div>
       );
     }
